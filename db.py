@@ -1,5 +1,7 @@
+# db.py
 import sqlite3
 from datetime import datetime, timezone
+import logging
 
 class TLEDatabase:
     def __init__(self, db_file="satellites.db"):
@@ -20,8 +22,8 @@ class TLEDatabase:
         """)
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS distances (
-            sat1_id TEXT,
-            sat2_id TEXT,
+            sat1_name TEXT,
+            sat2_name TEXT,
             min_distance REAL,
             closest_time TEXT,
             run_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -42,31 +44,38 @@ class TLEDatabase:
         """, (sat_id, name, line1, line2, date, datetime.now(timezone.utc)))
         self.conn.commit()
 
-    def fetch_tle(self, sat_id):
-        self.cursor.execute("SELECT * FROM tle WHERE sat_id=?", (sat_id,))
+    def get_tle(self, sat_name):
+        self.cursor.execute("SELECT * FROM tle WHERE name=?", (sat_name,))
         item = self.cursor.fetchone()
-        print(f"Type: {type(item)}")
         return {
-            'sat_id': str(item[0]),
+            'name': item[0],
             'line1': item[2],
             'line2': item[3],
         }
 
-    def fetch_all(self):
+    def get_tles(self):
         self.cursor.execute("SELECT * FROM tle")
         return self.cursor.fetchall()
-
-    def log_distance(self, sat1_id, sat2_id, min_distance, closest_time):
+    
+    def get_distances(self):
         self.cursor.execute("""
-        INSERT INTO distances (sat1_id, sat2_id, min_distance, closest_time)
+        SELECT sat1_name, sat2_name, min_distance, closest_time
+        FROM distances
+        ORDER BY closest_time DESC
+        """)
+        return self.cursor.fetchall()
+    
+    def log_distance(self, sat1_name, sat2_name, min_distance, closest_time):
+        self.cursor.execute("""
+        INSERT INTO distances (sat1_name, sat2_name, min_distance, closest_time)
         VALUES (?, ?, ?, ?)
-        """, (sat1_id, sat2_id, min_distance, closest_time))
+        """, (sat1_name, sat2_name, min_distance, closest_time))
         self.conn.commit()
     
     def get_last_updated(self):
         self.cursor.execute("""SELECT MAX(fetched_at) FROM tle""")
         time = self.cursor.fetchone()[0]
-        return datetime.fromisoformat(time) if time else None
+        return time if time else None
 
     def close(self):
         self.conn.close()
