@@ -1,5 +1,5 @@
 requests
-skyfield.api
+skyfield
 numpy
 datetime
 pandas
