@@ -48,9 +48,9 @@ class TLEDatabase:
         self.cursor.execute("SELECT * FROM tle WHERE name=?", (sat_name,))
         item = self.cursor.fetchone()
         return {
-            'name': item[0],
             'line1': item[2],
             'line2': item[3],
+            'name': item[0],
         }
 
     def get_tles(self):

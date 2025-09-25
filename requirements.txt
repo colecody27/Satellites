@@ -1,0 +1,9 @@
+requests
+EarthSatellite
+load
+skyfield
+numpy
+datetime
+pandas
+logging
+matplotlib

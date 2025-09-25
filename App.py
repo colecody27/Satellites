@@ -1,6 +1,5 @@
 # Appy.py
 import requests
-import json
 from skyfield.api import load, EarthSatellite
 import numpy as np
 from db import TLEDatabase 
@@ -11,12 +10,7 @@ import pandas as pd
 import logging
 import matplotlib.pyplot as plt
 
-"""
-Collision tracker
-    - Call API Get TLE of 2 elements (http://tle.ivanstanojevic.me/api/tle)
-    - 
-"""
-# API doesn't check value of User-Agent
+# NASA API doesn't check value of User-Agent
 HEADERS = {
     "User-Agent": "xxxx",
     "Accept": "application/json"
@@ -26,7 +20,7 @@ CURR_TIME = current_utc = datetime.now(timezone.utc)
 # Streamlit
 st.title("Satellite Collision Detector 🚀")
 st.write(f"**Current UTC Time:** {CURR_TIME.strftime('%Y-%m-%d %H:%M:%S')}")
-tab1, tab2 = st.tabs(["Overview", "Run Detection"])
+tab1 = st.tabs(["Overview"])[0]
 
 # Logging 
 logging.basicConfig(
@@ -111,6 +105,8 @@ with tab1:
     else:
         st.warning("No distance data available yet.")
 
+    st.write("") 
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Display each row individually with a button
     for i, row in df.iterrows():
