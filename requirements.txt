@@ -1,7 +1,7 @@
 requests
 EarthSatellite
 load
-skyfield
+skyfield.api
 numpy
 datetime
 pandas
