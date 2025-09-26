@@ -15,7 +15,7 @@ HEADERS = {
     "User-Agent": "xxxx",
     "Accept": "application/json"
     }
-CURR_TIME = current_utc = datetime.now(timezone.utc)
+CURR_TIME = current_utc = datetime.now(timezone.utc).replace(tzinfo=None)
 
 # Streamlit
 st.title("Satellite Collision Detector 🚀")
@@ -44,7 +44,7 @@ try:
     # Don't fetch TLEs if it's less than 1 hour old
     last_update = db.get_last_updated()
     if last_update:
-        last_update = datetime.fromisoformat(last_update)
+        last_update = datetime.fromisoformat(last_update).replace(tzinfo=None)
     else:
         last_update = None
     threshold = timedelta(hours=1)
